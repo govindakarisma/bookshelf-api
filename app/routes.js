@@ -1,3 +1,5 @@
+const { createBookHandler } = require("./handler");
+
 const routes = [
   {
     method: "GET",
@@ -12,6 +14,11 @@ const routes = [
     handler: () => {
       return `This route can only be accessed with the GET method`;
     },
+  },
+  {
+    method: "POST",
+    path: "/books",
+    handler: createBookHandler,
   },
 ];
 

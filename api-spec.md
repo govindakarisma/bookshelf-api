@@ -2,7 +2,7 @@
   <strong>API Spesification</strong>
 </h2>
 
-## Create
+# Create
 
 - Method : **POST**
 - URL : **/books**
@@ -40,9 +40,7 @@
   }
   ```
 
-  <hr>
-
-  ## Index
+  # Index
 
 - Method : **GET**
 - URL : **/books**
@@ -73,5 +71,3 @@
     }
   }
   ```
-
-  <hr>

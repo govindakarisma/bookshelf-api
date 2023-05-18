@@ -1,5 +1,3 @@
-// const { nanoid } = require("nanoid");
-// import { nanoid } from "nanoid";
 const bookshelf = require("./bookshelf");
 import("nanoid")
   .then((module) => {
@@ -9,8 +7,28 @@ import("nanoid")
     console.error(err);
   });
 
+/** start - create book handling */
 const createBookHandler = (request, h) => {
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
+  /** Start Validator */
+  if (!name || name === "") {
+    const res = h.response({
+      status: "fail",
+      message: "Gagal menambahkan buku. Mohon isi nama buku",
+    });
+    res.code(400);
+    return res;
+  }
+  if (readPage > pageCount) {
+    const res = h.response({
+      status: "fail",
+      message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+    });
+    res.code(400);
+    return res;
+  }
+  /** End Validator */
+
   const id = nanoid(16);
 
   // const isFinished = (readPage, pageCount) => {
@@ -47,12 +65,38 @@ const createBookHandler = (request, h) => {
     return res;
   }
 
+  // const res = h.response({
+  //   status: "fail",
+  //   message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+  // });
+  // res.code(400);
+  // return res;
   const res = h.response({
-    status: "fail",
-    message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+    status: "error",
+    message: "Buku gagal ditambahkan",
   });
-  res.code(400);
+  res.code(500);
   return res;
 };
+/** end - create book handling */
 
-module.exports = { createBookHandler };
+/** start - get all book handling */
+const getBooksHandler = (response, h) => {
+  const sortedBooks = bookshelf.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));
+  return {
+    status: "success",
+    data: {
+      books: sortedBooks.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  };
+};
+/** End - get all book handling */
+
+/** start - show detail book handling */
+/** end - show detail handling */
+
+module.exports = { createBookHandler, getBooksHandler };

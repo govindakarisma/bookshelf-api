@@ -11,39 +11,27 @@ import("nanoid")
 const createBookHandler = (request, h) => {
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
   /** Start Validator */
-  if (!name || name === "") {
-    const res = h.response({
-      status: "fail",
-      message: "Gagal menambahkan buku. Mohon isi nama buku",
-    });
-    res.code(400);
-    return res;
+  if (!name || name === "" || name === null) {
+    return h
+      .response({
+        status: "fail",
+        message: "Gagal menambahkan buku. Mohon isi nama buku",
+      })
+      .code(400);
   }
   if (readPage > pageCount) {
-    const res = h.response({
-      status: "fail",
-      message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
-    });
-    res.code(400);
-    return res;
+    return h
+      .response({
+        status: "fail",
+        message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+      })
+      .code(400);
   }
   /** End Validator */
 
   const id = nanoid(16);
-
-  // const isFinished = (readPage, pageCount) => {
-  //   if (readPage === pageCount) {
-  //     return true;
-  //   }
-  //   if (readPage < pageCount) {
-  //     return false;
-  //   }
-  // };
-
   const isFinished = (readPage, pageCount) => readPage === pageCount;
-
   const finished = isFinished(readPage, pageCount);
-
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
 
@@ -51,32 +39,28 @@ const createBookHandler = (request, h) => {
 
   bookshelf.push(newBook);
 
-  const isSuccess = bookshelf.filter((book) => book.id === id).length > 0;
+  const isSuccess = bookshelf.some((book) => book.id === id);
 
   if (isSuccess) {
-    const res = h.response({
-      status: "success",
-      message: "Buku berhasil ditambahkan",
-      data: {
-        bookId: id,
-      },
-    });
-    res.code(201);
-    return res;
+    const successResponse = h
+      .response({
+        status: "success",
+        message: "Buku berhasil ditambahkan",
+        data: {
+          bookId: id,
+        },
+      })
+      .code(201);
+    return successResponse;
+  } else {
+    const errorResponse = h
+      .response({
+        status: "error",
+        message: "Buku gagal ditambahkan",
+      })
+      .code(500);
+    return errorResponse;
   }
-
-  // const res = h.response({
-  //   status: "fail",
-  //   message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
-  // });
-  // res.code(400);
-  // return res;
-  const res = h.response({
-    status: "error",
-    message: "Buku gagal ditambahkan",
-  });
-  res.code(500);
-  return res;
 };
 /** end - create book handling */
 

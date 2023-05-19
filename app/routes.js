@@ -5,7 +5,15 @@ const routes = [
     method: "GET",
     path: "/",
     handler: (request, h) => {
-      return `<h1>Hola! it's a ${request.method} method</h1>`;
+      return {
+        message: "Dicoding Backend Developer Submission",
+        app_name: "Bookshelf API",
+        created_by: {
+          name: "Govinda Kharisma Dewa",
+          email: "govindakharisma10@gmail.com",
+          website: "https://govindakarisma.github.io/my-portfolio",
+        },
+      };
     },
   },
   {

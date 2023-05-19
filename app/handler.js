@@ -65,7 +65,7 @@ const createBookHandler = (request, h) => {
 /** end - create book handling */
 
 /** start - get all book handling */
-const getBooksHandler = (response, h) => {
+const getBooksHandler = () => {
   const sortedBooks = bookshelf.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));
   return {
     status: "success",
@@ -81,6 +81,28 @@ const getBooksHandler = (response, h) => {
 /** End - get all book handling */
 
 /** start - show detail book handling */
+const showBookHandler = (request, h) => {
+  const { bookId } = request.params;
+
+  const book = bookshelf.find((book) => book.id === bookId);
+
+  if (book) {
+    return {
+      status: "success",
+      data: {
+        book,
+      },
+    };
+  }
+
+  const response = h.response({
+    status: "fail",
+    message: "Buku tidak ditemukan",
+  });
+
+  response.code(404);
+  return response;
+};
 /** end - show detail handling */
 
-module.exports = { createBookHandler, getBooksHandler };
+module.exports = { createBookHandler, getBooksHandler, showBookHandler };

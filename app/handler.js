@@ -75,7 +75,17 @@ const createBookHandler = (request, h) => {
 
 /** start - get all book handling */
 const getBooksHandler = (request, h) => {
-  const sortedBooks = bookshelf.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));
+  const { name } = request.query;
+
+  let filteredBooks = bookshelf;
+
+  if (name) {
+    const searchKeyword = name.toLowerCase();
+    filteredBooks = bookshelf.filter((book) => book.name.toLowerCase().includes(searchKeyword));
+  }
+
+  const sortedBooks = filteredBooks.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));
+
   return {
     status: "success",
     data: {

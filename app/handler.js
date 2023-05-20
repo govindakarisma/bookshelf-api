@@ -75,18 +75,23 @@ const createBookHandler = (request, h) => {
 
 /** start - get all book handling */
 const getBooksHandler = (request, h) => {
-  const { name, reading } = request.query;
+  const { name, reading, finished } = request.query;
 
   let filteredBooks = bookshelf;
 
   if (name) {
     const searchKeyword = name.toLowerCase();
-    filteredBooks = bookshelf.filter((book) => book.name.toLowerCase().includes(searchKeyword));
+    filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(searchKeyword));
   }
 
   if (reading !== undefined) {
     const isReading = reading === "1";
     filteredBooks = filteredBooks.filter((book) => book.reading === isReading);
+  }
+
+  if (finished !== undefined) {
+    const isFinished = finished === "1";
+    filteredBooks = filteredBooks.filter((book) => book.finished === isFinished);
   }
 
   const sortedBooks = filteredBooks.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));

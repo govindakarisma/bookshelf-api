@@ -1,19 +1,21 @@
-const { createBookHandler, getBooksHandler, showBookHandler } = require("./handler");
+const { createBookHandler, getBooksHandler, showBookHandler, editBookHandler } = require("./handler");
 
 const routes = [
   {
     method: "GET",
     path: "/",
     handler: (request, h) => {
-      return {
-        message: "Dicoding Backend Developer Submission",
-        app_name: "Bookshelf API",
-        created_by: {
-          name: "Govinda Kharisma Dewa",
-          email: "govindakharisma10@gmail.com",
-          website: "https://govindakarisma.github.io/my-portfolio",
-        },
-      };
+      return h
+        .response({
+          message: "Dicoding Backend Developer Submission",
+          app_name: "Bookshelf API",
+          created_by: {
+            name: "Govinda Kharisma Dewa",
+            email: "govindakharisma10@gmail.com",
+            website: "https://govindakarisma.github.io/my-portfolio",
+          },
+        })
+        .code(200);
     },
   },
   {
@@ -37,6 +39,11 @@ const routes = [
     method: "GET",
     path: "/books/{bookId}",
     handler: showBookHandler,
+  },
+  {
+    method: "PUT",
+    path: "/books/{bookId}",
+    handler: editBookHandler,
   },
 ];
 

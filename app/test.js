@@ -7,6 +7,63 @@ import("nanoid")
     console.error(err);
   });
 
+/** start - create book handling */
+const createBookHandler = (request, h) => {
+  const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
+  /** Start Validator */
+  if (!name || name === "" || name === null) {
+    return h
+      .response({
+        status: "fail",
+        message: "Gagal menambahkan buku. Mohon isi nama buku",
+      })
+      .code(400);
+  }
+  if (readPage > pageCount) {
+    return h
+      .response({
+        status: "fail",
+        message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+      })
+      .code(400);
+  }
+  /** End Validator */
+
+  const id = nanoid(16);
+  const isFinished = (readPage, pageCount) => readPage === pageCount;
+  const finished = isFinished(readPage, pageCount);
+  const insertedAt = new Date().toISOString();
+  const updatedAt = insertedAt;
+
+  const newBook = { id, name, year, author, summary, publisher, pageCount, readPage, finished, reading, insertedAt, updatedAt };
+
+  bookshelf.push(newBook);
+
+  const isSuccess = bookshelf.some((book) => book.id === id);
+
+  if (isSuccess) {
+    const successResponse = h
+      .response({
+        status: "success",
+        message: "Buku berhasil ditambahkan",
+        data: {
+          bookId: id,
+        },
+      })
+      .code(201);
+    return successResponse;
+  } else {
+    const errorResponse = h
+      .response({
+        status: "error",
+        message: "Buku gagal ditambahkan",
+      })
+      .code(500);
+    return errorResponse;
+  }
+};
+/** end - create book handling */
+
 /** Start - edit book handling */
 const editBookHandler = (request, h) => {
   const { bookId } = request.params;
@@ -36,8 +93,8 @@ const editBookHandler = (request, h) => {
   const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
 
   if (bookIndex !== -1) {
-    bookshelf[index] = {
-      ...bookshelf[index],
+    bookshelf[bookIndex] = {
+      ...bookshelf[bookIndex],
       name,
       year,
       author,
@@ -67,4 +124,4 @@ const editBookHandler = (request, h) => {
 };
 /** end - edit book handling */
 
-module.exports = { editBookHandler };
+module.exports = { createBookHandler, editBookHandler };

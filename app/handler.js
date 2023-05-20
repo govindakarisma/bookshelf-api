@@ -7,27 +7,36 @@ import("nanoid")
     console.error(err);
   });
 
+/** Start Validator */
+const validateBook = (book) => {
+  const { name, pageCount, readPage } = book;
+
+  if (!name || name === "" || name === null) {
+    return {
+      status: "fail",
+      message: "Gagal menambahkan buku. Mohon isi nama buku",
+    };
+  }
+
+  if (readPage > pageCount) {
+    return {
+      status: "fail",
+      message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+    };
+  }
+
+  return null;
+};
+/** End Validator */
+
 /** start - create book handling */
 const createBookHandler = (request, h) => {
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
-  /** Start Validator */
-  if (!name || name === "" || name === null) {
-    return h
-      .response({
-        status: "fail",
-        message: "Gagal menambahkan buku. Mohon isi nama buku",
-      })
-      .code(400);
+  /** Validation */
+  const validationError = validateBook({ name, pageCount, readPage });
+  if (validationError) {
+    return h.response(validationError).code(400);
   }
-  if (readPage > pageCount) {
-    return h
-      .response({
-        status: "fail",
-        message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
-      })
-      .code(400);
-  }
-  /** End Validator */
 
   const id = nanoid(16);
   const isFinished = (readPage, pageCount) => readPage === pageCount;
@@ -110,28 +119,15 @@ const editBookHandler = (request, h) => {
   const { bookId } = request.params;
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
 
-  /** Start Validator */
-  if (!name || name === "" || name === null) {
-    return h
-      .response({
-        status: "fail",
-        message: "Gagal menambahkan buku. Mohon isi nama buku",
-      })
-      .code(400);
+  /** Validation */
+  const validationError = validateBook({ name, pageCount, readPage });
+  if (validationError) {
+    return h.response(validationError).code(400);
   }
-  if (readPage > pageCount) {
-    return h
-      .response({
-        status: "fail",
-        message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
-      })
-      .code(400);
-  }
-  /** End Validator */
 
   const updatedAt = new Date().toISOString();
 
-  const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
+  const bookIndex = bookshelf.find((book) => book.id === bookId);
 
   if (bookIndex !== -1) {
     bookshelf[bookIndex] = {
@@ -169,7 +165,7 @@ const editBookHandler = (request, h) => {
 const deleteBookHandler = (request, h) => {
   const { bookId } = request.params;
 
-  const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
+  const bookIndex = bookshelf.find((book) => book.id === bookId);
 
   if (bookIndex !== -1) {
     bookshelf.splice(bookIndex, 1);

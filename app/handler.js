@@ -65,7 +65,7 @@ const createBookHandler = (request, h) => {
 /** end - create book handling */
 
 /** start - get all book handling */
-const getBooksHandler = () => {
+const getBooksHandler = (request, h) => {
   const sortedBooks = bookshelf.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));
   return {
     status: "success",
@@ -165,4 +165,31 @@ const editBookHandler = (request, h) => {
 };
 /** end - edit book handling */
 
-module.exports = { createBookHandler, getBooksHandler, showBookHandler, editBookHandler };
+/** start - delete book handling */
+const deleteBookHandler = (request, h) => {
+  const { bookId } = request.params;
+
+  const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
+
+  if (bookIndex !== -1) {
+    bookshelf.splice(bookIndex, 1);
+
+    const response = h.response({
+      status: "success",
+      message: "Buku berhasil dihapus",
+    });
+    response.code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: "fail",
+    message: "Buku gagal dihapus. Id tidak ditemukan",
+  });
+
+  response.code(404);
+  return response;
+};
+/** end - delete book handling */
+
+module.exports = { createBookHandler, getBooksHandler, showBookHandler, editBookHandler, deleteBookHandler };

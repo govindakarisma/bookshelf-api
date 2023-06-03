@@ -10,14 +10,14 @@ import("nanoid")
 /** Start Validator */
 const validateBook = (book) => {
   const { name, pageCount, readPage } = book;
-
+  /** handling if name is not input  */
   if (!name || name === "" || name === null) {
     return {
       status: "fail",
       message: "Gagal menambahkan buku. Mohon isi nama buku",
     };
   }
-
+  /** handling if readPage is greater than pageCount  */
   if (readPage > pageCount) {
     return {
       status: "fail",
@@ -83,19 +83,19 @@ const getBooksHandler = (request, h) => {
     const searchKeyword = name.toLowerCase();
     filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(searchKeyword));
   }
-
+  /** Filtering data by reading true or false */
   if (reading !== undefined) {
     const isReading = reading === "1";
     filteredBooks = filteredBooks.filter((book) => book.reading === isReading);
   }
-
+  /** Filtering data by finished or unfinished */
   if (finished !== undefined) {
     const isFinished = finished === "1";
     filteredBooks = filteredBooks.filter((book) => book.finished === isFinished);
   }
-
+  /** Get all data sort by latest */
   const sortedBooks = filteredBooks.sort((a, b) => new Date(b.insertedAt) - new Date(a.insertedAt));
-
+  /** Show result */
   return {
     status: "success",
     data: {

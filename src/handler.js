@@ -78,7 +78,7 @@ const getBooksHandler = (request, h) => {
   const { name, reading, finished } = request.query;
 
   let filteredBooks = bookshelf;
-
+  /** Search by book name */
   if (name) {
     const searchKeyword = name.toLowerCase();
     filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(searchKeyword));
@@ -147,9 +147,9 @@ const editBookHandler = (request, h) => {
 
   const updatedAt = new Date().toISOString();
 
-  const bookIndex = bookshelf.find((book) => book.id === bookId);
+  const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
 
-  if (bookIndex !== -1) {
+  if (bookIndex !== -1 && bookshelf[bookIndex]) {
     bookshelf[bookIndex] = {
       ...bookshelf[bookIndex],
       name,

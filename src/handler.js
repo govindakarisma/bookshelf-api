@@ -190,7 +190,7 @@ const editBookHandler = (request, h) => {
 const deleteBookHandler = (request, h) => {
   const { bookId } = request.params;
 
-  const bookIndex = bookshelf.find((book) => book.id === bookId);
+  const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
 
   if (bookIndex !== -1) {
     bookshelf.splice(bookIndex, 1);

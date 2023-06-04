@@ -8,20 +8,22 @@ import("nanoid")
   });
 
 /** Start Validator */
-const validateBook = (book) => {
+const validateBook = (book, isCreate) => {
   const { name, pageCount, readPage } = book;
+
+  const action = isCreate == true ? "menambahkan" : "memperbarui";
   /** handling if name is not input  */
   if (!name || name === "" || name === null) {
     return {
       status: "fail",
-      message: "Gagal menambahkan buku. Mohon isi nama buku",
+      message: `Gagal ${action} buku. Mohon isi nama buku`,
     };
   }
   /** handling if readPage is greater than pageCount  */
   if (readPage > pageCount) {
     return {
       status: "fail",
-      message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+      message: `Gagal ${action} buku. readPage tidak boleh lebih besar dari pageCount`,
     };
   }
 
@@ -33,7 +35,7 @@ const validateBook = (book) => {
 const createBookHandler = (request, h) => {
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
   /** Validation */
-  const validationError = validateBook({ name, pageCount, readPage });
+  const validationError = validateBook({ name, pageCount, readPage }, true);
   if (validationError) {
     return h.response(validationError).code(400);
   }
@@ -140,11 +142,13 @@ const editBookHandler = (request, h) => {
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
 
   /** Validation */
-  const validationError = validateBook({ name, pageCount, readPage });
+  const validationError = validateBook({ name, pageCount, readPage }, false);
   if (validationError) {
     return h.response(validationError).code(400);
   }
 
+  const isFinished = (readPage, pageCount) => readPage === pageCount;
+  const finished = isFinished(readPage, pageCount);
   const updatedAt = new Date().toISOString();
 
   const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
@@ -159,6 +163,7 @@ const editBookHandler = (request, h) => {
       publisher,
       pageCount,
       readPage,
+      finished,
       reading,
       updatedAt,
     };
